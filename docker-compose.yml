@@ -14,10 +14,7 @@ services:
   db:
     image: postgres:14-alpine
     volumes:
-      - db:/var/lib/postgresql/data
+      - ./volumes:/var/lib/postgresql/data
     restart: always
     env_file:
       - .env
-
-volumes:
-  db:
