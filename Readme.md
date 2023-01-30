@@ -1,4 +1,4 @@
-# Finance tracker
+# VPN SHOP
 
 ## Launch app
 1. Install `docker` and `docker-compose`
