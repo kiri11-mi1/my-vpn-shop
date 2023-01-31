@@ -5,11 +5,17 @@ import (
 	"log"
 	"my-vpn-shop/subscription"
 	"os"
+	"strconv"
 	"time"
 )
 
 func main() {
 	providerToken := os.Getenv("PROVIDER_TOKEN")
+	totalVpnPrice, err := strconv.ParseFloat(os.Getenv("TOTAL_VPN_PRICE"), 64)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 	pref := tg.Settings{
 		Token:  os.Getenv("TELEGRAM_TOKEN"),
 		Poller: &tg.LongPoller{Timeout: 10 * time.Second},
@@ -27,7 +33,7 @@ func main() {
 	})
 
 	b.Handle("/buy", func(c tg.Context) error {
-		price, err := subscription.GetActualPrice(5, 330)
+		price, err := subscription.GetActualPrice(5, totalVpnPrice)
 		if err != nil {
 			log.Fatal(err)
 			return err
