@@ -2,4 +2,4 @@ package subscription
 
 import "errors"
 
-var NotKeysCount = errors.New("not keys count in server")
+var ZeroKeysInServer = errors.New("not keys count in server")
