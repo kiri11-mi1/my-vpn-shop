@@ -8,4 +8,6 @@ restart:
 	docker-compose down && docker-compose up -d --build
 
 test:
+	docker-compose down
+	docker-compose up -d --build
 	docker-compose exec bot go test ./tests/...
