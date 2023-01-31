@@ -8,6 +8,7 @@ import (
 
 func main() {
 	bot, err := tg.NewBotAPI(os.Getenv("TELEGRAM_TOKEN"))
+	providerToken := os.Getenv("PROVIDER_TOKEN")
 	if err != nil {
 		log.Panic(err)
 	}
@@ -27,20 +28,29 @@ func main() {
 			continue
 		}
 
-		msg := tg.NewMessage(update.Message.Chat.ID, "")
+		var response tg.Chattable
 		switch update.Message.Command() {
+		case "start":
+			response = tg.NewMessage(update.Message.Chat.ID, START)
+		case "buy":
+			var prices = []tg.LabeledPrice{{Label: "Цена за месяц", Amount: 100}}
+			response = tg.NewInvoice(
+				update.Message.Chat.ID,
+				InvoiceTitle,
+				InvoiceDescription,
+				InvoicePayload,
+				providerToken,
+				StartParameter,
+				InvoiceCurrency,
+				prices,
+			)
 		case "help":
-			msg.Text = "I understand /sayhi and /status."
-		case "sayhi":
-			msg.Text = "Hi :)"
-		case "status":
-			msg.Text = "I'm ok."
+			response = tg.NewMessage(update.Message.Chat.ID, HELP)
 		default:
-			msg.Text = "I don't know that command"
+			response = tg.NewMessage(update.Message.Chat.ID, NotKnownCommand)
 		}
-		if _, err := bot.Send(msg); err != nil {
+		if _, err := bot.Send(response); err != nil {
 			log.Panic(err)
 		}
-
 	}
 }
