@@ -1,56 +1,47 @@
 package main
 
 import (
-	tg "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	tg "gopkg.in/telebot.v3"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
-	bot, err := tg.NewBotAPI(os.Getenv("TELEGRAM_TOKEN"))
 	providerToken := os.Getenv("PROVIDER_TOKEN")
+	pref := tg.Settings{
+		Token:  os.Getenv("TELEGRAM_TOKEN"),
+		Poller: &tg.LongPoller{Timeout: 10 * time.Second},
+	}
+
+	b, err := tg.NewBot(pref)
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
+		return
 	}
-	bot.Debug = true
-	log.Printf("Authorized on account %s", bot.Self.UserName)
+	log.Println(b.Me.Username, "start working...")
 
-	u := tg.NewUpdate(0)
-	u.Timeout = 60
-	updates := bot.GetUpdatesChan(u)
+	b.Handle("/start", func(c tg.Context) error {
+		return c.Send(START)
+	})
 
-	for update := range updates {
-		if update.Message == nil { // ignore any non-Message updates
-			continue
+	b.Handle("/buy", func(c tg.Context) error {
+		// TODO: add method for get actual price vpn
+		prices := []tg.Price{{Label: "Актуальная цена за этот месяц", Amount: 10000}}
+		file := tg.File{FileURL: InvoiceImage}
+		invoice := tg.Invoice{
+			Title:       InvoiceTitle,
+			Description: InvoiceDescription,
+			Payload:     InvoicePayload,
+			Currency:    InvoiceCurrency,
+			Token:       providerToken,
+			Prices:      prices,
+			Photo:       &tg.Photo{File: file},
 		}
 
-		if !update.Message.IsCommand() { // ignore any non-command Messages
-			continue
-		}
+		_, err := invoice.Send(b, c.Recipient(), nil)
+		return err
+	})
 
-		var response tg.Chattable
-		switch update.Message.Command() {
-		case "start":
-			response = tg.NewMessage(update.Message.Chat.ID, START)
-		case "buy":
-			var prices = []tg.LabeledPrice{{Label: "Цена за месяц", Amount: 100}}
-			response = tg.NewInvoice(
-				update.Message.Chat.ID,
-				InvoiceTitle,
-				InvoiceDescription,
-				InvoicePayload,
-				providerToken,
-				StartParameter,
-				InvoiceCurrency,
-				prices,
-			)
-		case "help":
-			response = tg.NewMessage(update.Message.Chat.ID, HELP)
-		default:
-			response = tg.NewMessage(update.Message.Chat.ID, NotKnownCommand)
-		}
-		if _, err := bot.Send(response); err != nil {
-			log.Panic(err)
-		}
-	}
+	b.Start()
 }
