@@ -1,4 +1,4 @@
-module finance-tracker
+module my-vpn-shop
 
 go 1.19
 
