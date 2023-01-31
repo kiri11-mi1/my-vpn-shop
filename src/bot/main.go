@@ -3,6 +3,7 @@ package main
 import (
 	tg "gopkg.in/telebot.v3"
 	"log"
+	"my-vpn-shop/subscription"
 	"os"
 	"time"
 )
@@ -26,8 +27,11 @@ func main() {
 	})
 
 	b.Handle("/buy", func(c tg.Context) error {
-		// TODO: add method for get actual price vpn
-		prices := []tg.Price{{Label: "Актуальная цена за этот месяц", Amount: 10000}}
+		price, err := subscription.GetActualPrice(5, 330)
+		if err != nil {
+			log.Fatal(err)
+			return err
+		}
 		file := tg.File{FileURL: InvoiceImage}
 		invoice := tg.Invoice{
 			Title:       InvoiceTitle,
@@ -35,11 +39,11 @@ func main() {
 			Payload:     InvoicePayload,
 			Currency:    InvoiceCurrency,
 			Token:       providerToken,
-			Prices:      prices,
+			Prices:      []tg.Price{price},
 			Photo:       &tg.Photo{File: file},
 		}
 
-		_, err := invoice.Send(b, c.Recipient(), nil)
+		_, err = invoice.Send(b, c.Recipient(), nil)
 		return err
 	})
 
