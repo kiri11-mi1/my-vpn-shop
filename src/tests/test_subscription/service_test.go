@@ -3,6 +3,7 @@ package test_subscription
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	tg "gopkg.in/telebot.v3"
 	"my-vpn-shop/subscription"
 	"testing"
 )
@@ -12,8 +13,11 @@ func TestService_GetActualPrice(t *testing.T) {
 		const (
 			keysCount     int     = 6
 			totalVPNPrice float64 = 300
-			expected      float64 = 50.0
 		)
+		expected := tg.Price{
+			Label:  "Актуальная цена за этот месяц",
+			Amount: 5000,
+		}
 		actual, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
 		require.NoError(t, err)
 		assert.Equal(t, expected, actual)
@@ -30,8 +34,11 @@ func TestService_GetActualPrice(t *testing.T) {
 		const (
 			keysCount     int     = 18
 			totalVPNPrice float64 = 0
-			expected      float64 = 0
 		)
+		expected := tg.Price{
+			Label:  "Актуальная цена за этот месяц",
+			Amount: 0,
+		}
 		actual, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
 		require.NoError(t, err)
 		assert.Equal(t, expected, actual)
