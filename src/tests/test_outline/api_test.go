@@ -3,6 +3,7 @@ package test_outline
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"log"
 	"my-vpn-shop/outline"
 	"os"
 	"testing"
@@ -16,5 +17,15 @@ func TestApi_GetKeys(t *testing.T) {
 		keys, err := client.GetKeys()
 		require.NoError(t, err)
 		assert.NotEmpty(t, keys)
+	})
+
+	t.Run("not valid url", func(t *testing.T) {
+		var (
+			client = outline.NewOutlineClient("https://example.com")
+		)
+		keys, err := client.GetKeys()
+		log.Println(err)
+		require.Error(t, err)
+		assert.Empty(t, keys)
 	})
 }
