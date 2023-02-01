@@ -2,6 +2,8 @@ package outline
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/valyala/fasthttp"
 	"net/http"
 )
@@ -45,6 +47,9 @@ func (o *OutlineClient) GetKeys() (AccessKeys, error) {
 		return AccessKeys{}, err
 	}
 	keys := AccessKeys{}
+	if res.StatusCode() != http.StatusOK {
+		return AccessKeys{}, errors.New(fmt.Sprintf(API_ERROR_MESSAGE, res.StatusCode(), res.Body()))
+	}
 	if err := json.Unmarshal(res.Body(), &keys); err != nil {
 		return AccessKeys{}, err
 	}
