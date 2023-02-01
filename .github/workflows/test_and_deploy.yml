@@ -16,4 +16,5 @@ jobs:
       - name: Test
         run: |
           cd ./src
+          export VPN_URL_API={{ env.VPN_URL_API }}
           go test ./tests/...
