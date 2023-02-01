@@ -1,10 +1,11 @@
 package outline
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/valyala/fasthttp"
+	"io"
 	"net/http"
 )
 
@@ -12,7 +13,7 @@ type AccessKey struct {
 	Id        string `json:"id"`
 	Name      string `json:"name"`
 	Password  string `json:"password"`
-	Port      string `json:"port"`
+	Port      int    `json:"port"`
 	Method    string `json:"method"`
 	AccessUrl string `json:"accessUrl"`
 }
@@ -33,25 +34,30 @@ func NewOutlineClient(apiUrl string) *OutlineClient {
 	}
 }
 
+func NewTransport() *http.Transport {
+	return &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+}
+
 func (o *OutlineClient) GetKeys() (AccessKeys, error) {
 	endpoint := "/access-keys"
 
-	req := &fasthttp.Request{}
-	res := &fasthttp.Response{}
-
-	req.Header.SetMethod(http.MethodGet)
-	req.SetRequestURI(o.ApiUrl + endpoint)
-
-	err := fasthttp.Do(req, res)
+	client := &http.Client{Transport: NewTransport()}
+	resp, err := client.Get(o.ApiUrl + endpoint)
 	if err != nil {
 		return AccessKeys{}, err
 	}
-	keys := AccessKeys{}
-	if res.StatusCode() != http.StatusOK {
-		return AccessKeys{}, errors.New(fmt.Sprintf(API_ERROR_MESSAGE, res.StatusCode(), res.Body()))
+	if resp.StatusCode != http.StatusOK {
+		return AccessKeys{}, errors.New(fmt.Sprintf(API_ERROR_MESSAGE, resp.StatusCode, resp.Body))
 	}
-	if err := json.Unmarshal(res.Body(), &keys); err != nil {
+	bytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return AccessKeys{}, nil
+	}
+	kr := KeysResponse{}
+	if err := json.Unmarshal(bytes, &kr); err != nil {
 		return AccessKeys{}, err
 	}
-	return keys, nil
+	return kr.Keys, nil
 }
