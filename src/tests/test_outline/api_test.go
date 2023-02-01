@@ -26,4 +26,13 @@ func TestApi_GetKeys(t *testing.T) {
 		require.Error(t, err)
 		assert.Empty(t, keys)
 	})
+
+	t.Run("empty url", func(t *testing.T) {
+		var (
+			client = outline.NewOutlineClient("")
+		)
+		keys, err := client.GetKeys()
+		require.Error(t, err)
+		assert.Empty(t, keys)
+	})
 }
