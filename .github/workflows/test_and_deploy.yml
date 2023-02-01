@@ -2,7 +2,7 @@ name: Test and Deploy
 
 on: [push]
 env:
-  env_var: ${{vars.VPN_URL_API}}
+  VPN_URL_API: ${{vars.VPN_URL_API}}
 
 jobs:
   build:
