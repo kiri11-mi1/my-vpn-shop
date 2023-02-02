@@ -9,7 +9,7 @@ import (
 )
 
 func TestService_GetActualPrice(t *testing.T) {
-	t.Run("get actual price", func(t *testing.T) {
+	t.Run("get minimal price value", func(t *testing.T) {
 		const (
 			keysCount     int     = 6
 			totalVPNPrice float64 = 300
@@ -50,5 +50,18 @@ func TestService_GetActualPrice(t *testing.T) {
 		)
 		_, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
 		require.ErrorIs(t, err, subscription.ErrNegativeTotalPrice)
+	})
+	t.Run("get actual price above minimal valid value", func(t *testing.T) {
+		const (
+			keysCount     int     = 3
+			totalVPNPrice float64 = 1000
+		)
+		expected := tg.Price{
+			Label:  "Актуальная цена за этот месяц",
+			Amount: 33333,
+		}
+		actual, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
+		require.NoError(t, err)
+		assert.Equal(t, expected, actual)
 	})
 }
