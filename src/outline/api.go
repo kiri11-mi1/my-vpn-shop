@@ -3,9 +3,8 @@ package outline
 import (
 	"crypto/tls"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -61,4 +60,50 @@ func (o *OutlineClient) GetKeys() (AccessKeys, error) {
 		return AccessKeys{}, err
 	}
 	return kr.Keys, nil
+}
+
+func (o *OutlineClient) CreateKey() (AccessKey, error) {
+	endpoint := "/access-keys"
+	client := &http.Client{Transport: NewTransport()}
+	resp, err := client.Post(o.ApiUrl+endpoint, "application/json", nil)
+	if err != nil {
+		return AccessKey{}, nil
+	}
+	if resp.StatusCode != http.StatusCreated {
+		log.Println("Url:", o.ApiUrl+endpoint, "Status code:", resp.StatusCode)
+		return AccessKey{}, ErrInApi
+	}
+	bytesArray, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return AccessKey{}, nil
+	}
+	ak := AccessKey{}
+	if err := json.Unmarshal(bytesArray, &ak); err != nil {
+		return AccessKey{}, err
+	}
+	return ak, nil
+}
+
+func (o *OutlineClient) ChangeKeyName(name string, key AccessKey) error {
+	return nil
+}
+
+func (o *OutlineClient) DeleteKey(key AccessKey) error {
+	endpoint := "/access-keys/" + key.Id
+	client := &http.Client{Transport: NewTransport()}
+	req, err := http.NewRequest("DELETE", o.ApiUrl+endpoint, nil)
+	if err != nil {
+		return err
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		log.Println("Url:", o.ApiUrl+endpoint, "Status code:", resp.StatusCode)
+		return ErrInApi
+	}
+
+	return nil
 }
