@@ -3,6 +3,7 @@ package main
 import (
 	tg "gopkg.in/telebot.v3"
 	"log"
+	"my-vpn-shop/outline"
 	"my-vpn-shop/subscription"
 	"os"
 	"strconv"
@@ -12,6 +13,7 @@ import (
 func main() {
 	providerToken := os.Getenv("PROVIDER_TOKEN")
 	totalVpnPrice, err := strconv.ParseFloat(os.Getenv("TOTAL_VPN_PRICE"), 64)
+	api := outline.NewOutlineClient(os.Getenv("VPN_URL_API"))
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -33,7 +35,11 @@ func main() {
 	})
 
 	b.Handle("/buy", func(c tg.Context) error {
-		price, err := subscription.GetActualPrice(5, totalVpnPrice)
+		keys, err := api.GetKeys()
+		if err != nil {
+			return err
+		}
+		price, err := subscription.GetActualPrice(len(keys), totalVpnPrice)
 		if err != nil {
 			log.Fatal(err)
 			return err
