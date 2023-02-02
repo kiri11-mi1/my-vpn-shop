@@ -36,3 +36,27 @@ func TestApi_GetKeys(t *testing.T) {
 		assert.Empty(t, keys)
 	})
 }
+
+func TestApi_CreateKey_DeleteKey(t *testing.T) {
+	t.Run("create key via outline api and delete it", func(t *testing.T) {
+		var (
+			client = outline.NewOutlineClient(os.Getenv("VPN_URL_API"))
+		)
+		key, err := client.CreateKey()
+		require.NoError(t, err)
+		assert.NotEmpty(t, key)
+		require.NoError(t, client.DeleteKey(key))
+	})
+	t.Run("delete not existing key", func(t *testing.T) {
+		var (
+			client = outline.NewOutlineClient(os.Getenv("VPN_URL_API"))
+		)
+		key, err := client.CreateKey()
+		require.NoError(t, err)
+		assert.NotEmpty(t, key)
+		require.NoError(t, client.DeleteKey(key))
+
+		require.ErrorIs(t, client.DeleteKey(key), outline.ErrInApi)
+
+	})
+}
