@@ -16,7 +16,7 @@ func TestService_GetActualPrice(t *testing.T) {
 		)
 		expected := tg.Price{
 			Label:  "Актуальная цена за этот месяц",
-			Amount: 5000,
+			Amount: 8741,
 		}
 		actual, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
 		require.NoError(t, err)
@@ -28,7 +28,7 @@ func TestService_GetActualPrice(t *testing.T) {
 			totalVPNPrice float64 = 300
 		)
 		_, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
-		require.ErrorIs(t, err, subscription.ZeroKeysInServer)
+		require.ErrorIs(t, err, subscription.ErrZeroKeysInServer)
 	})
 	t.Run("zero total price", func(t *testing.T) {
 		const (
@@ -37,10 +37,18 @@ func TestService_GetActualPrice(t *testing.T) {
 		)
 		expected := tg.Price{
 			Label:  "Актуальная цена за этот месяц",
-			Amount: 0,
+			Amount: 8741,
 		}
 		actual, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
 		require.NoError(t, err)
 		assert.Equal(t, expected, actual)
+	})
+	t.Run("negative total price", func(t *testing.T) {
+		const (
+			keysCount     int     = 18
+			totalVPNPrice float64 = -543.01
+		)
+		_, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
+		require.ErrorIs(t, err, subscription.ErrNegativeTotalPrice)
 	})
 }
