@@ -54,10 +54,11 @@ func main() {
 			Prices:      []tg.Price{price},
 			Photo:       &tg.Photo{File: file},
 		}
-
 		_, err = invoice.Send(b, c.Recipient(), nil)
 		return err
 	})
-
+	b.Handle(tg.OnCheckout, func(c tg.Context) error {
+		return c.Accept()
+	})
 	b.Start()
 }
