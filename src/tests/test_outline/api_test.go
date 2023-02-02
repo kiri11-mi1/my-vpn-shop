@@ -86,5 +86,15 @@ func TestApi_ChangeKeyName(t *testing.T) {
 
 		require.NoError(t, client.DeleteKey(key))
 	})
+	t.Run("not existing key", func(t *testing.T) {
+		var (
+			client = outline.NewOutlineClient(os.Getenv("VPN_URL_API"))
+		)
+		key, err := client.CreateKey()
+		require.NoError(t, err)
+		assert.NotEmpty(t, key)
+		require.NoError(t, client.DeleteKey(key))
 
+		require.ErrorIs(t, client.ChangeKeyName("test key", key), outline.ErrInApi)
+	})
 }
