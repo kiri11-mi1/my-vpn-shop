@@ -49,7 +49,8 @@ func (o *OutlineClient) GetKeys() (AccessKeys, error) {
 		return AccessKeys{}, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return AccessKeys{}, errors.New(fmt.Sprintf(API_ERROR_MESSAGE, resp.StatusCode, resp.Body))
+		log.Println("Url:", o.ApiUrl+endpoint, "Status code:", resp.StatusCode)
+		return AccessKeys{}, ErrInApi
 	}
 	bytesArray, err := io.ReadAll(resp.Body)
 	if err != nil {
