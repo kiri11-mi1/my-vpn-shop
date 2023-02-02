@@ -51,12 +51,12 @@ func (o *OutlineClient) GetKeys() (AccessKeys, error) {
 	if resp.StatusCode != http.StatusOK {
 		return AccessKeys{}, errors.New(fmt.Sprintf(API_ERROR_MESSAGE, resp.StatusCode, resp.Body))
 	}
-	bytes, err := io.ReadAll(resp.Body)
+	bytesArray, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return AccessKeys{}, nil
 	}
 	kr := KeysResponse{}
-	if err := json.Unmarshal(bytes, &kr); err != nil {
+	if err := json.Unmarshal(bytesArray, &kr); err != nil {
 		return AccessKeys{}, err
 	}
 	return kr.Keys, nil
