@@ -1,6 +1,7 @@
 package outline
 
 import (
+	"bytes"
 	"crypto/tls"
 	"encoding/json"
 	"io"
@@ -85,6 +86,33 @@ func (o *OutlineClient) CreateKey() (AccessKey, error) {
 }
 
 func (o *OutlineClient) ChangeKeyName(name string, key AccessKey) error {
+	endpoint := "/access-keys/" + key.Id + "/name"
+	client := &http.Client{Transport: NewTransport()}
+
+	payload := map[string]string{"name": name}
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequest("PUT", o.ApiUrl+endpoint, bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	if err != nil {
+		return err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		b, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		log.Println("Url:", o.ApiUrl+endpoint, "Status code:", resp.StatusCode, "Body", string(b))
+		return ErrInApi
+	}
 	return nil
 }
 
