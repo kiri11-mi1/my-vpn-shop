@@ -2,4 +2,5 @@ package subscription
 
 import "errors"
 
-var ZeroKeysInServer = errors.New("not keys count in server")
+var ErrZeroKeysInServer = errors.New("not keys count in server")
+var ErrNegativeTotalPrice = errors.New("total price must be positive")
