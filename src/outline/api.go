@@ -106,11 +106,7 @@ func (o *OutlineClient) ChangeKeyName(name string, key AccessKey) error {
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		log.Println("Url:", o.ApiUrl+endpoint, "Status code:", resp.StatusCode, "Body", string(b))
+		log.Println("Url:", o.ApiUrl+endpoint, "Status code:", resp.StatusCode)
 		return ErrInApi
 	}
 	return nil
