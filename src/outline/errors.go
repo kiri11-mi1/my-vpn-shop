@@ -1,3 +1,5 @@
 package outline
 
-var API_ERROR_MESSAGE = "STATUS:%v Something went wrong:%v"
+import "errors"
+
+var ErrInApi = errors.New("error in api server")
