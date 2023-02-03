@@ -16,7 +16,7 @@ func TestService_GetActualPrice(t *testing.T) {
 		)
 		expected := tg.Price{
 			Label:  "Актуальная цена за этот месяц",
-			Amount: 8741,
+			Amount: subscription.MinAmount * 100,
 		}
 		actual, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
 		require.NoError(t, err)
@@ -37,7 +37,7 @@ func TestService_GetActualPrice(t *testing.T) {
 		)
 		expected := tg.Price{
 			Label:  "Актуальная цена за этот месяц",
-			Amount: 8741,
+			Amount: subscription.MinAmount * 100,
 		}
 		actual, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
 		require.NoError(t, err)
@@ -61,6 +61,30 @@ func TestService_GetActualPrice(t *testing.T) {
 			Amount: 33333,
 		}
 		actual, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
+		require.NoError(t, err)
+		assert.Equal(t, expected, actual)
+	})
+}
+
+func TestService_GetInvoice(t *testing.T) {
+	t.Run("get invoice", func(t *testing.T) {
+		var (
+			providerToken = "test token"
+			totalVPNPrice = 600.0
+			keysCount     = 6
+			image         = tg.File{FileURL: subscription.InvoiceImage}
+			price         = tg.Price{Label: subscription.Label, Amount: 100 * 100}
+			expected      = tg.Invoice{
+				Title:       subscription.InvoiceTitle,
+				Description: subscription.InvoiceDescription,
+				Payload:     subscription.InvoicePayload,
+				Currency:    subscription.InvoiceCurrency,
+				Token:       providerToken,
+				Prices:      []tg.Price{price},
+				Photo:       &tg.Photo{File: image},
+			}
+		)
+		actual, err := subscription.GetInvoice(keysCount, totalVPNPrice, providerToken)
 		require.NoError(t, err)
 		assert.Equal(t, expected, actual)
 	})
