@@ -4,14 +4,14 @@ import (
 	tg "gopkg.in/telebot.v3"
 	"log"
 	"my-vpn-shop/bot/handlers"
-	"os"
+	"my-vpn-shop/config"
 	"time"
 )
 
 func main() {
 
 	pref := tg.Settings{
-		Token:  os.Getenv("TELEGRAM_TOKEN"),
+		Token:  config.Get().TelegramToken,
 		Poller: &tg.LongPoller{Timeout: 10 * time.Second},
 	}
 
