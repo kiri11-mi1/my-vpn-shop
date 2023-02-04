@@ -7,7 +7,7 @@ import (
 const MinAmount = 60.00 // valid minimal value for telegram payments
 const Label = "Актуальная цена за этот месяц"
 
-func GetActualPrice(keysCount int, totalVPNPrice float64) (tg.Price, error) {
+func getActualPrice(keysCount int, totalVPNPrice float64) (tg.Price, error) {
 	if keysCount == 0 {
 		return tg.Price{}, ErrZeroKeysInServer
 	}
@@ -23,7 +23,7 @@ func GetActualPrice(keysCount int, totalVPNPrice float64) (tg.Price, error) {
 }
 
 func GetInvoice(keysCount int, totalVpnPrice float64, providerToken string) (tg.Invoice, error) {
-	price, err := GetActualPrice(keysCount, totalVpnPrice)
+	price, err := getActualPrice(keysCount, totalVpnPrice)
 	if err != nil {
 		return tg.Invoice{}, err
 	}
