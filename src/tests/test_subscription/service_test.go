@@ -9,14 +9,6 @@ import (
 )
 
 //func TestService_GetActualPrice(t *testing.T) {
-//	t.Run("zero keys in vpn servers", func(t *testing.T) {
-//		const (
-//			keysCount     int     = 0
-//			totalVPNPrice float64 = 300
-//		)
-//		_, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
-//		require.ErrorIs(t, err, subscription.ErrZeroKeysInServer)
-//	})
 //	t.Run("zero total price", func(t *testing.T) {
 //		const (
 //			keysCount     int     = 18
@@ -29,14 +21,6 @@ import (
 //		actual, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
 //		require.NoError(t, err)
 //		assert.Equal(t, expected, actual)
-//	})
-//	t.Run("negative total price", func(t *testing.T) {
-//		const (
-//			keysCount     int     = 18
-//			totalVPNPrice float64 = -543.01
-//		)
-//		_, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
-//		require.ErrorIs(t, err, subscription.ErrNegativeTotalPrice)
 //	})
 //	t.Run("get actual price above minimal valid value", func(t *testing.T) {
 //		const (
@@ -104,6 +88,16 @@ func TestService_GetInvoice(t *testing.T) {
 		)
 		actual, err := subscription.GetInvoice(keysCount, totalVPNPrice, providerToken)
 		require.ErrorIs(t, err, subscription.ErrZeroKeysInServer)
+		assert.Empty(t, actual)
+	})
+	t.Run("negative total price", func(t *testing.T) {
+		const (
+			providerToken         = "test token"
+			keysCount     int     = 18
+			totalVPNPrice float64 = -543.01
+		)
+		actual, err := subscription.GetInvoice(keysCount, totalVPNPrice, providerToken)
+		require.ErrorIs(t, err, subscription.ErrNegativeTotalPrice)
 		assert.Empty(t, actual)
 	})
 }
