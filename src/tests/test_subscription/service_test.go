@@ -96,4 +96,14 @@ func TestService_GetInvoice(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, expected, actual)
 	})
+	t.Run("zero count keys", func(t *testing.T) {
+		var (
+			providerToken = "test token"
+			totalVPNPrice = 100.0
+			keysCount     = 0
+		)
+		actual, err := subscription.GetInvoice(keysCount, totalVPNPrice, providerToken)
+		require.ErrorIs(t, err, subscription.ErrZeroKeysInServer)
+		assert.Empty(t, actual)
+	})
 }
