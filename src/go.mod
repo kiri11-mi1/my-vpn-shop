@@ -4,7 +4,10 @@ go 1.19
 
 require gopkg.in/telebot.v3 v3.1.2
 
-require github.com/caarlos0/env/v6 v6.10.1 // indirect
+require (
+	github.com/caarlos0/env/v6 v6.10.1 // indirect
+	github.com/lib/pq v1.10.7 // indirect
+)
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
