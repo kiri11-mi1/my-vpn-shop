@@ -1,7 +1,9 @@
 package subscription
 
 import (
+	"fmt"
 	tg "gopkg.in/telebot.v3"
+	"my-vpn-shop/db"
 )
 
 const MinAmount = 60.00 // valid minimal value for telegram payments
@@ -38,4 +40,17 @@ func GetInvoice(keysCount int, totalVpnPrice float64, providerToken string) (tg.
 		Photo:       &tg.Photo{File: file},
 	}
 	return invoice, nil
+}
+
+func IsConnected(subscribers []db.Subscriber, chatId int64) bool {
+	for _, sub := range subscribers {
+		if sub.ID == chatId {
+			return true
+		}
+	}
+	return false
+}
+
+func GetName(sub string, id int64) string {
+	return fmt.Sprintf("sub_%s_%d", sub, id)
 }
