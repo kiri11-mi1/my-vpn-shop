@@ -6,7 +6,7 @@ import (
 )
 
 func (p *Postgres) GetSubscribers() ([]db.Subscriber, error) {
-	rows, err := p.db.Query("select * from Subscriber")
+	rows, err := p.db.Query("select * from subscriber")
 	if err != nil {
 		return nil, err
 	}
