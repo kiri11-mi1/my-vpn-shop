@@ -11,7 +11,6 @@ type Storage interface {
 	InsertAccessKey(id, name, accessUrl string, sub db.Subscriber) (db.AccessKey, error)
 	DeleteSubscriber(id int64) error
 	GetKeyBySubId(id int64) (db.AccessKey, error)
-	InsertPayment(amount float64, sub db.Subscriber) (db.Payment, error)
 }
 
 type API interface {
