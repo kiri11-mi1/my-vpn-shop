@@ -40,6 +40,7 @@ func TestAccessKey_InsertAccessKey(t *testing.T) {
 		require.NoError(t, err)
 		require.NotEmpty(t, actual)
 		require.Equal(t, expected, actual)
+		require.NoError(t, sqliteStorage.DeleteSubscriber(testSub.ID))
 	})
 	t.Run("insert access key with not created user", func(t *testing.T) {
 		sqliteClient, err := db.Connect("sqlite3", "test_store.db")
@@ -53,7 +54,7 @@ func TestAccessKey_InsertAccessKey(t *testing.T) {
 			keyID              = "test_id"
 			keyAccessUrl       = "https://example.com"
 			keyName            = "test key name"
-			subID        int64 = 123
+			subID        int64 = 128
 			subName            = "test user"
 		)
 
