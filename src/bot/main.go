@@ -36,14 +36,17 @@ func main() {
 		log.Fatal(err)
 		return
 	}
+	log.Println("Connected to database successfully")
+	if err := pgClient.CreateTables(); err != nil {
+		log.Fatal(err)
+		return
+	}
 	pgDB := pgClient.Client()
 	pgStorage := storage.NewSQlDB(pgDB)
 
 	outlineAPI := outline.NewOutlineClient(config.Get().ApiUrl)
 
 	handlerManager := handlers.NewHandlers(pgStorage, outlineAPI)
-
-	log.Println(b.Me.Username, "start working...")
 
 	b.Handle("/start", handlers.HandleStart)
 	b.Handle("/vpn", handlerManager.HandleVPN)
@@ -53,5 +56,7 @@ func main() {
 	b.Handle(tg.OnCheckout, handlerManager.HandleAcceptPayment)
 	b.Handle("/help", handlers.HandleHelp)
 	b.Handle("/connections", handlerManager.HandleConnections)
+
+	log.Println(b.Me.Username, "start working...")
 	b.Start()
 }
