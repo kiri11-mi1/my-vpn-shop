@@ -82,4 +82,20 @@ func TestAccessKey_GetKeyBySubId(t *testing.T) {
 		require.NotEmpty(t, actual)
 		require.Equal(t, expected, actual)
 	})
+	t.Run("get key by not existing sub id", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		var subID int64 = 123
+
+		actual, err := sqliteStorage.GetKeyBySubId(subID)
+		require.Error(t, err)
+		require.Empty(t, actual)
+	})
 }
