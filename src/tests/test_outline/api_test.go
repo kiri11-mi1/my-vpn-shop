@@ -110,4 +110,13 @@ func TestApi_GetAccess(t *testing.T) {
 		assert.NotEmpty(t, key)
 		require.NoError(t, client.DeleteKey(key))
 	})
+	t.Run("create access key with empty name", func(t *testing.T) {
+		var (
+			client = outline.NewOutlineClient(config.Get().ApiUrl)
+			name   = ""
+		)
+		key, err := client.GetAccess(name)
+		require.ErrorIs(t, err, outline.ErrEmptyString)
+		assert.Empty(t, key)
+	})
 }
