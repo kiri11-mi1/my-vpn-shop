@@ -5,7 +5,7 @@ env:
   VPN_URL_API: ${{vars.VPN_URL_API}}
 
 jobs:
-  build:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -15,7 +15,7 @@ jobs:
         with:
           go-version: 1.19.5
 
-      - name: Test
+      - name: Run tests
         run: |
           cd ./src
           go test ./tests/...
