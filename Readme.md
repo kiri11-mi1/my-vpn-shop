@@ -8,16 +8,6 @@
    make up
    ```
 
-## Run tests
-1. Run app
-    ```
-   make up
-   ```
-2. Test app
-    ```
-   make test
-   ```
-
 ## Stop app
 If bot is started, then:
 ```
