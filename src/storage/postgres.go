@@ -2,10 +2,10 @@ package storage
 
 import "database/sql"
 
-type Postgres struct {
+type SQL struct {
 	db *sql.DB
 }
 
-func NewPostgresDB(client *sql.DB) *Postgres {
-	return &Postgres{db: client}
+func NewSQlDB(client *sql.DB) *SQL {
+	return &SQL{db: client}
 }

@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func (p *Postgres) GetSubscribers() ([]db.Subscriber, error) {
+func (p *SQL) GetSubscribers() ([]db.Subscriber, error) {
 	rows, err := p.db.Query("select * from subscriber")
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func (p *Postgres) GetSubscribers() ([]db.Subscriber, error) {
 	return subs, nil
 }
 
-func (p *Postgres) InsertSubscriber(id int64, name string) (db.Subscriber, error) {
+func (p *SQL) InsertSubscriber(id int64, name string) (db.Subscriber, error) {
 	payedAt := time.Now()
 	_, err := p.db.Exec(
 		"insert into subscriber (id, name, payed_at) values ($1, $2, $3)",
@@ -35,7 +35,7 @@ func (p *Postgres) InsertSubscriber(id int64, name string) (db.Subscriber, error
 	return sub, nil
 }
 
-func (p *Postgres) DeleteSubscriber(id int64) error {
+func (p *SQL) DeleteSubscriber(id int64) error {
 	_, err := p.db.Exec(
 		"delete from subscriber where id=$1",
 		id,

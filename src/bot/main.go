@@ -37,7 +37,7 @@ func main() {
 		return
 	}
 	pgDB := pgClient.Client()
-	pgStorage := storage.NewPostgresDB(pgDB)
+	pgStorage := storage.NewSQlDB(pgDB)
 
 	outlineAPI := outline.NewOutlineClient(config.Get().ApiUrl)
 

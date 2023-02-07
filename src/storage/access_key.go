@@ -2,7 +2,7 @@ package storage
 
 import "my-vpn-shop/db"
 
-func (p *Postgres) InsertAccessKey(id, name, accessUrl string, sub db.Subscriber) (db.AccessKey, error) {
+func (p *SQL) InsertAccessKey(id, name, accessUrl string, sub db.Subscriber) (db.AccessKey, error) {
 	_, err := p.db.Exec(
 		"insert into accesskey (id, name, access_url, subscriber_id) values ($1, $2, $3, $4)",
 		id, name, accessUrl, sub.ID,
@@ -14,7 +14,7 @@ func (p *Postgres) InsertAccessKey(id, name, accessUrl string, sub db.Subscriber
 	return key, nil
 }
 
-func (p *Postgres) GetKeyBySubId(id int64) (db.AccessKey, error) {
+func (p *SQL) GetKeyBySubId(id int64) (db.AccessKey, error) {
 	rows, err := p.db.Query("select * from accesskey where subscriber_id=$1", id)
 	if err != nil {
 		return db.AccessKey{}, err
