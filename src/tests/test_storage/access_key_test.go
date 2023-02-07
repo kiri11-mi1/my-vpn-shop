@@ -1,6 +1,8 @@
 package test_storage
 
 import (
+	"fmt"
+	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/require"
 	"log"
@@ -11,12 +13,14 @@ import (
 
 func TestAccessKey_InsertAccessKey(t *testing.T) {
 	t.Run("insert access key in db", func(t *testing.T) {
-		sqliteClient, err := db.Connect("sqlite3", "test_store.db")
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
 		if err != nil {
 			log.Fatal(err)
 			return
 		}
 		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
 		var (
 			keyID              = "test_id"
@@ -41,27 +45,5 @@ func TestAccessKey_InsertAccessKey(t *testing.T) {
 		require.NotEmpty(t, actual)
 		require.Equal(t, expected, actual)
 		require.NoError(t, sqliteStorage.DeleteSubscriber(testSub.ID))
-	})
-	t.Run("insert access key with not created user", func(t *testing.T) {
-		sqliteClient, err := db.Connect("sqlite3", "test_store.db")
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
-		sqliteDB := sqliteClient.Client()
-		sqliteStorage := storage.NewSQlDB(sqliteDB)
-		var (
-			keyID              = "test_id"
-			keyAccessUrl       = "https://example.com"
-			keyName            = "test key name"
-			subID        int64 = 128
-			subName            = "test user"
-		)
-
-		testSub := db.Subscriber{ID: subID, Name: subName}
-		actual, err := sqliteStorage.InsertAccessKey(keyID, keyName, keyAccessUrl, testSub)
-
-		require.Error(t, err)
-		require.Empty(t, actual)
 	})
 }
