@@ -93,3 +93,24 @@ func TestService_GetInvoice(t *testing.T) {
 		assert.Equal(t, expected, actual)
 	})
 }
+
+func TestService_GetName(t *testing.T) {
+	t.Run("get name sub", func(t *testing.T) {
+		var (
+			username       = "test"
+			id       int64 = 245
+			expected       = "sub_test_245"
+		)
+		actual := subscription.GetName(username, id)
+		assert.Equal(t, expected, actual)
+	})
+	t.Run("get name with empty username", func(t *testing.T) {
+		var (
+			username       = ""
+			id       int64 = 245
+			expected       = "sub__245"
+		)
+		actual := subscription.GetName(username, id)
+		assert.Equal(t, expected, actual)
+	})
+}
