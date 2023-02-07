@@ -106,3 +106,25 @@ func TestSubscriber_DeleteSubscriber(t *testing.T) {
 		assert.Equal(t, lenSubArray, len(subs))
 	})
 }
+
+func TestSubscriber_GetSubscribers(t *testing.T) {
+	t.Run("get all subs", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		var lenSubArray = 10
+		for i := 1; i <= lenSubArray; i++ {
+			_, err = sqliteStorage.InsertSubscriber(int64(i), fmt.Sprintf("test sub %d", i))
+			require.NoError(t, err)
+		}
+		subs, err := sqliteStorage.GetSubscribers()
+		require.NoError(t, err)
+		assert.Equal(t, lenSubArray, len(subs))
+	})
+}
