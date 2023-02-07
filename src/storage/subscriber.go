@@ -31,7 +31,7 @@ func (p *SQL) InsertSubscriber(id int64, name string) (db.Subscriber, error) {
 	if err != nil {
 		return db.Subscriber{}, err
 	}
-	sub := db.Subscriber{ID: id, Name: name}
+	sub := db.Subscriber{ID: id, Name: name, PayedAt: payedAt}
 	return sub, nil
 }
 
