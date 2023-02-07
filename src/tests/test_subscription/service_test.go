@@ -4,6 +4,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	tg "gopkg.in/telebot.v3"
+	"my-vpn-shop/db"
 	"my-vpn-shop/subscription"
 	"testing"
 )
@@ -112,5 +113,24 @@ func TestService_GetName(t *testing.T) {
 		)
 		actual := subscription.GetName(username, id)
 		assert.Equal(t, expected, actual)
+	})
+}
+
+func TestService_IsConnected(t *testing.T) {
+	t.Run("sub in subs array", func(t *testing.T) {
+		var (
+			id   int64 = 23
+			subs       = []db.Subscriber{{ID: id}, {ID: 234}, {ID: 5784}, {ID: 3677}}
+		)
+		actual := subscription.IsConnected(subs, id)
+		assert.True(t, actual)
+	})
+	t.Run("sub not in subs array", func(t *testing.T) {
+		var (
+			id   int64 = 23
+			subs       = []db.Subscriber{{ID: 234}, {ID: 5784}, {ID: 3677}}
+		)
+		actual := subscription.IsConnected(subs, id)
+		assert.False(t, actual)
 	})
 }
