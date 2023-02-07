@@ -44,6 +44,42 @@ func TestAccessKey_InsertAccessKey(t *testing.T) {
 		require.NoError(t, err)
 		require.NotEmpty(t, actual)
 		require.Equal(t, expected, actual)
-		require.NoError(t, sqliteStorage.DeleteSubscriber(testSub.ID))
+	})
+}
+
+func TestAccessKey_GetKeyBySubId(t *testing.T) {
+	t.Run("get key by sub id", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		var (
+			keyID              = "test_id"
+			keyAccessUrl       = "https://example.com"
+			keyName            = "test key name"
+			subID        int64 = 123
+			subName            = "test user"
+		)
+
+		testSub, err := sqliteStorage.InsertSubscriber(subID, subName)
+		require.NoError(t, err)
+
+		expected := db.AccessKey{
+			ID:         keyID,
+			AccessUrl:  keyAccessUrl,
+			Name:       keyName,
+			Subscriber: db.Subscriber{ID: testSub.ID},
+		}
+		_, err = sqliteStorage.InsertAccessKey(keyID, keyName, keyAccessUrl, testSub)
+		require.NoError(t, err)
+
+		actual, err := sqliteStorage.GetKeyBySubId(testSub.ID)
+		require.NotEmpty(t, actual)
+		require.Equal(t, expected, actual)
 	})
 }
