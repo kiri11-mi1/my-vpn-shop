@@ -33,4 +33,25 @@ func TestSubscriber_InsertSubscriber(t *testing.T) {
 		assert.Equal(t, subID, actual.ID)
 		assert.Equal(t, subName, actual.Name)
 	})
+	t.Run("insert subscriber in db with empty name", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		var (
+			subID   int64 = 123
+			subName       = ""
+		)
+
+		actual, err := sqliteStorage.InsertSubscriber(subID, subName)
+		assert.NotEmpty(t, actual)
+		require.NoError(t, err)
+		assert.Equal(t, subID, actual.ID)
+		assert.Equal(t, subName, actual.Name)
+	})
 }
