@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	tg "gopkg.in/telebot.v3"
 	"log"
 	"my-vpn-shop/config"
@@ -58,8 +59,8 @@ func (h *Handlers) HandleSuccessPayment(c tg.Context) error {
 		return err
 	}
 	log.Println("Add key in db:", dbKey.Name, dbKey.ID, dbKey.Subscriber.Name)
-	message := "Ключ доступа для Outline: " + dbKey.AccessUrl
-	return c.Send(message)
+	message := fmt.Sprintf("Ключ доступа для Outline:\n`%s`", dbKey.AccessUrl)
+	return c.Send(message, tg.ModeMarkdown)
 }
 
 func (h *Handlers) HandleDisconnect(c tg.Context) error {
@@ -81,6 +82,6 @@ func (h *Handlers) HandleLostKey(c tg.Context) error {
 	if err != nil {
 		return err
 	}
-	message := "Твой ключ найден: " + key.AccessUrl
-	return c.Send(message)
+	message := fmt.Sprintf("Твой ключ найден, нажми на него, чтобы скопировать в буфер обмена:\n`%s`", key.AccessUrl)
+	return c.Send(message, tg.ModeMarkdown)
 }
