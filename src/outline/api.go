@@ -133,6 +133,9 @@ func (o *OutlineClient) DeleteKey(key AccessKey) error {
 }
 
 func (o *OutlineClient) GetAccess(name string) (AccessKey, error) {
+	if len(name) == 0 {
+		return AccessKey{}, ErrEmptyString
+	}
 	createdKey, err := o.CreateKey()
 	if err != nil {
 		return AccessKey{}, err
