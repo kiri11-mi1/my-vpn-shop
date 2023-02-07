@@ -9,6 +9,7 @@ import (
 	"my-vpn-shop/db"
 	"my-vpn-shop/storage"
 	"testing"
+	"time"
 )
 
 func TestSubscriber_InsertSubscriber(t *testing.T) {
@@ -32,6 +33,7 @@ func TestSubscriber_InsertSubscriber(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, subID, actual.ID)
 		assert.Equal(t, subName, actual.Name)
+		assert.IsType(t, time.Now(), actual.PayedAt)
 	})
 	t.Run("insert subscriber in db with empty name", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
@@ -53,5 +55,6 @@ func TestSubscriber_InsertSubscriber(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, subID, actual.ID)
 		assert.Equal(t, subName, actual.Name)
+		assert.IsType(t, time.Now(), actual.PayedAt)
 	})
 }
