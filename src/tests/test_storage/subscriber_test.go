@@ -149,3 +149,76 @@ func TestSubscriber_GetSubscribers(t *testing.T) {
 		assert.Equal(t, lenSubArray, len(subs))
 	})
 }
+
+func TestSubscriber_GetSubByID(t *testing.T) {
+	t.Run("get sub from db", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		var (
+			lenSubArray       = 10
+			subID       int64 = 12
+			subName           = fmt.Sprintf("test sub %d", subID)
+		)
+		for i := 1; i <= lenSubArray; i++ {
+			_, err = sqliteStorage.InsertSubscriber(int64(i), fmt.Sprintf("test sub %d", i))
+			require.NoError(t, err)
+		}
+		_, err = sqliteStorage.InsertSubscriber(subID, subName)
+		require.NoError(t, err)
+
+		actual, err := sqliteStorage.GetSubByID(subID)
+		require.NoError(t, err)
+		require.NotEmpty(t, actual)
+		require.Equal(t, subID, actual.ID)
+		require.Equal(t, subName, actual.Name)
+	})
+	t.Run("get not existing sub", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		var (
+			subID int64 = 12
+		)
+
+		actual, err := sqliteStorage.GetSubByID(subID)
+		require.Error(t, storage.ErrSubNotFound)
+		require.Empty(t, actual)
+	})
+	t.Run("check valid date", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		var (
+			subID    int64 = 123
+			subName        = "test sub"
+			expected       = time.Now().Format("2006-01-02")
+		)
+
+		_, err = sqliteStorage.InsertSubscriber(subID, subName)
+		require.NoError(t, err)
+
+		sub, err := sqliteStorage.GetSubByID(subID)
+		require.NoError(t, err)
+
+		assert.Equal(t, expected, sub.PayedAt.Format("2006-01-02"))
+	})
+}
