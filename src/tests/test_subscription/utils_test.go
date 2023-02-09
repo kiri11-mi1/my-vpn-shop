@@ -34,6 +34,32 @@ func TestUtils_IsTimeOutPay(t *testing.T) {
 		actual := subscription.IsTimeOutPay(inputLastPayDate, inputCurrentTime)
 		assert.True(t, actual)
 	})
+	t.Run("not time out", func(t *testing.T) {
+		var (
+			inputLastPayDate = time.Date(
+				2023,
+				01,
+				12,
+				0,
+				0,
+				0,
+				0,
+				time.Now().Location(),
+			)
+			inputCurrentTime = time.Date(
+				2023,
+				02,
+				11,
+				0,
+				0,
+				0,
+				0,
+				time.Now().Location(),
+			)
+		)
+		actual := subscription.IsTimeOutPay(inputLastPayDate, inputCurrentTime)
+		assert.False(t, actual)
+	})
 }
 
 func TestUtils_GetActualPrice(t *testing.T) {
