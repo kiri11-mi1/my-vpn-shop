@@ -57,6 +57,27 @@ func TestSubscriber_InsertSubscriber(t *testing.T) {
 		assert.Equal(t, subName, actual.Name)
 		assert.IsType(t, time.Now(), actual.PayedAt)
 	})
+	t.Run("insert existing subscriber", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		var (
+			subID   int64 = 123
+			subName       = ""
+		)
+
+		_, err = sqliteStorage.InsertSubscriber(subID, subName)
+		require.NoError(t, err)
+
+		_, err = sqliteStorage.InsertSubscriber(subID, subName)
+		require.Error(t, err)
+	})
 }
 
 func TestSubscriber_DeleteSubscriber(t *testing.T) {
