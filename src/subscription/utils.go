@@ -50,3 +50,21 @@ func CheckError(err error) {
 		log.Fatal(err)
 	}
 }
+
+func GetInvoice(countSubs int, providerToken string, totalVpnPrice float64) (tg.Invoice, error) {
+	price, err := GetActualPrice(countSubs, totalVpnPrice)
+	if err != nil {
+		return tg.Invoice{}, err
+	}
+	file := tg.File{FileURL: InvoiceImage}
+	invoice := tg.Invoice{
+		Title:       InvoiceTitle,
+		Description: InvoiceDescription,
+		Payload:     InvoicePayload,
+		Currency:    InvoiceCurrency,
+		Token:       providerToken,
+		Prices:      []tg.Price{price},
+		Photo:       &tg.Photo{File: file},
+	}
+	return invoice, nil
+}
