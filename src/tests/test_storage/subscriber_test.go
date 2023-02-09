@@ -222,3 +222,49 @@ func TestSubscriber_GetSubByID(t *testing.T) {
 		assert.Equal(t, expected, sub.PayedAt.Format("2006-01-02"))
 	})
 }
+
+func TestSubscriber_UpdateSubscriberPayedAt(t *testing.T) {
+	t.Run("update sub pay date", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		var (
+			subID        int64 = 12
+			subName            = fmt.Sprintf("test sub %d", subID)
+			expectedDate       = time.Now()
+		)
+		_, err = sqliteStorage.InsertSubscriber(subID, subName)
+		require.NoError(t, err)
+
+		require.NoError(t, sqliteStorage.UpdateSubscriberPayedAt(subID))
+		sub, err := sqliteStorage.GetSubByID(subID)
+		require.NoError(t, err)
+		actualDate := sub.PayedAt
+
+		require.Equal(t, expectedDate.Day(), actualDate.Day())
+		require.Equal(t, expectedDate.Year(), actualDate.Year())
+		require.Equal(t, expectedDate.Month(), actualDate.Month())
+	})
+	t.Run("update not existing sub pay date", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		var (
+			subID int64 = 12
+		)
+		require.ErrorIs(t, sqliteStorage.UpdateSubscriberPayedAt(subID), storage.ErrSubNotFound)
+	})
+
+}
