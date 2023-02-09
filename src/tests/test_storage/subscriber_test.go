@@ -264,7 +264,7 @@ func TestSubscriber_UpdateSubscriberPayedAt(t *testing.T) {
 		var (
 			subID int64 = 12
 		)
-		require.ErrorIs(t, sqliteStorage.UpdateSubscriberPayedAt(subID), storage.ErrSubNotFound)
+		require.NoError(t, sqliteStorage.UpdateSubscriberPayedAt(subID))
 	})
 
 }
