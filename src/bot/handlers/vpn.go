@@ -3,6 +3,8 @@ package handlers
 import (
 	"fmt"
 	tg "gopkg.in/telebot.v3"
+	"my-vpn-shop/config"
+	"my-vpn-shop/subscription"
 )
 
 var (
@@ -23,7 +25,11 @@ func (h *Handlers) HandleVPN(c tg.Context) error {
 	if err != nil {
 		return err
 	}
-	invoice, err := h.service.GetInvoice()
+	countSubs, err := h.service.GetCountSubs()
+	if err != nil {
+		return err
+	}
+	invoice, err := subscription.GetInvoice(countSubs+1, config.Get().ProviderToken, config.Get().TotalVpnPrice)
 	if err != nil {
 		return err
 	}
