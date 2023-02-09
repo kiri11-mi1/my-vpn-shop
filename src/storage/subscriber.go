@@ -5,26 +5,26 @@ import (
 	"time"
 )
 
-func (p *SQL) GetSubscribers() ([]db.Subscriber, error) {
-	rows, err := p.db.Query("select * from subscriber")
+func (s *SQL) GetSubscribers() ([]db.Subscriber, error) {
+	rows, err := s.db.Query("select * from subscriber")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 	subs := []db.Subscriber{}
 	for rows.Next() {
-		s := db.Subscriber{}
-		if err := rows.Scan(&s.ID, &s.Name, &s.PayedAt); err != nil {
+		sub := db.Subscriber{}
+		if err := rows.Scan(&sub.ID, &sub.Name, &sub.PayedAt); err != nil {
 			return nil, err
 		}
-		subs = append(subs, s)
+		subs = append(subs, sub)
 	}
 	return subs, nil
 }
 
-func (p *SQL) InsertSubscriber(id int64, name string) (db.Subscriber, error) {
+func (s *SQL) InsertSubscriber(id int64, name string) (db.Subscriber, error) {
 	payedAt := time.Now()
-	_, err := p.db.Exec(
+	_, err := s.db.Exec(
 		"insert into subscriber (id, name, payed_at) values ($1, $2, $3)",
 		id, name, payedAt.Format("2006-01-02"),
 	)
@@ -35,8 +35,8 @@ func (p *SQL) InsertSubscriber(id int64, name string) (db.Subscriber, error) {
 	return sub, nil
 }
 
-func (p *SQL) DeleteSubscriber(id int64) error {
-	_, err := p.db.Exec(
+func (s *SQL) DeleteSubscriber(id int64) error {
+	_, err := s.db.Exec(
 		"delete from subscriber where id=$1",
 		id,
 	)
@@ -44,4 +44,21 @@ func (p *SQL) DeleteSubscriber(id int64) error {
 		return err
 	}
 	return nil
+}
+
+func (s *SQL) GetSubByID(id int64) (db.Subscriber, error) {
+	rows, err := s.db.Query("select * from subscriber where id=$1", id)
+	if err != nil {
+		return db.Subscriber{}, err
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		return db.Subscriber{}, ErrSubNotFound
+	}
+	sub := db.Subscriber{}
+	if err := rows.Scan(&sub.ID, &sub.Name, &sub.PayedAt); err != nil {
+		return db.Subscriber{}, err
+	}
+	return sub, nil
 }
