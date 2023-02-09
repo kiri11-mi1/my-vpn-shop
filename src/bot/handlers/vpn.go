@@ -36,9 +36,13 @@ func (h *Handlers) HandleAcceptPayment(c tg.Context) error {
 }
 
 func (h *Handlers) HandleSuccessPayment(c tg.Context) error {
-	//if h.service.IsConnected(c.Chat().ID) {
-	//	// продление подписки
-	//}
+	if h.service.IsConnected(c.Chat().ID) {
+		if err := h.service.Renew(c.Chat().ID); err != nil {
+			return err
+		}
+		message := "Ваша подписка продлена!"
+		return c.Send(message)
+	}
 	key, err := h.service.Connect(c.Chat().ID, c.Sender().Username)
 	if err != nil {
 		return err
