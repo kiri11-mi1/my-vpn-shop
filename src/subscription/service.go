@@ -19,6 +19,7 @@ type Storage interface {
 	DeleteSubscriber(id int64) error
 	GetKeyBySubId(id int64) (db.AccessKey, error)
 	GetSubByID(id int64) (db.Subscriber, error)
+	UpdateSubscriberPayedAt(id int64) error
 }
 
 type API interface {
@@ -118,10 +119,20 @@ func (s *Service) GetCountSubs() (int, error) {
 	return len(subs), nil
 }
 
-func (s *Service) NewInvoiceTask(bot *tg.Bot) {
+func (s *Service) Renew(chatID int64) error {
+	if err := s.storage.UpdateSubscriberPayedAt(chatID); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Service) CheckPayDateTask(bot *tg.Bot) {
 	for true {
 		subs, err := s.storage.GetSubscribers()
 		CheckError(err)
+		if len(subs) == 0 {
+			continue
+		}
 		for _, sub := range subs {
 			recipient := &tg.Chat{ID: sub.ID}
 			now := time.Now()
