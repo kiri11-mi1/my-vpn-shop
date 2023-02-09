@@ -10,6 +10,7 @@ import (
 	"my-vpn-shop/db"
 	"my-vpn-shop/outline"
 	"my-vpn-shop/storage"
+	"my-vpn-shop/subscription"
 	"time"
 )
 
@@ -45,8 +46,8 @@ func main() {
 	pgStorage := storage.NewSQlDB(pgDB)
 
 	outlineAPI := outline.NewOutlineClient(config.Get().ApiUrl)
-
-	handlerManager := handlers.NewHandlers(pgStorage, outlineAPI)
+	subscriptionService := subscription.NewSubscriptionService(pgStorage, outlineAPI)
+	handlerManager := handlers.NewHandlers(subscriptionService)
 
 	b.Handle("/start", handlers.HandleStart)
 	b.Handle("/vpn", handlerManager.HandleVPN)
