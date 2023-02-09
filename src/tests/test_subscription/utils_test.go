@@ -60,7 +60,7 @@ func TestUtils_IsTimeOutPay(t *testing.T) {
 		actual := subscription.IsTimeOutPay(inputLastPayDate, inputCurrentTime)
 		assert.False(t, actual)
 	})
-	t.Run("time out by second", func(t *testing.T) {
+	t.Run("not time out", func(t *testing.T) {
 		var (
 			inputLastPayDate = time.Date(
 				2023,
@@ -76,15 +76,122 @@ func TestUtils_IsTimeOutPay(t *testing.T) {
 				2023,
 				02,
 				12,
-				0,
-				0,
+				4,
+				34,
 				1,
-				0,
+				13,
 				time.Now().Location(),
 			)
 		)
 		actual := subscription.IsTimeOutPay(inputLastPayDate, inputCurrentTime)
+		assert.False(t, actual)
+	})
+	t.Run("equal day, month, year - not time out", func(t *testing.T) {
+		var (
+			inputLastPayDate = time.Date(
+				2023,
+				01,
+				12,
+				0,
+				0,
+				0,
+				0,
+				time.Now().Location(),
+			)
+			inputCurrentTime = time.Date(
+				2023,
+				01,
+				12,
+				4,
+				34,
+				1,
+				13,
+				time.Now().Location(),
+			)
+		)
+		actual := subscription.IsTimeOutPay(inputLastPayDate, inputCurrentTime)
+		assert.False(t, actual)
+	})
+}
+
+func TestUtils_IsPayDay(t *testing.T) {
+	t.Run("is a pay day", func(t *testing.T) {
+		var (
+			inputLastPayDate = time.Date(
+				2023,
+				01,
+				12,
+				0,
+				0,
+				0,
+				0,
+				time.Now().Location(),
+			)
+			inputCurrentTime = time.Date(
+				2023,
+				02,
+				12,
+				5,
+				45,
+				2,
+				0,
+				time.Now().Location(),
+			)
+		)
+		actual := subscription.IsPayDay(inputLastPayDate, inputCurrentTime)
 		assert.True(t, actual)
+	})
+	t.Run("date before pay day", func(t *testing.T) {
+		var (
+			inputLastPayDate = time.Date(
+				2023,
+				01,
+				12,
+				0,
+				0,
+				0,
+				0,
+				time.Now().Location(),
+			)
+			inputCurrentTime = time.Date(
+				2023,
+				02,
+				11,
+				5,
+				45,
+				2,
+				0,
+				time.Now().Location(),
+			)
+		)
+		actual := subscription.IsPayDay(inputLastPayDate, inputCurrentTime)
+		assert.False(t, actual)
+	})
+	t.Run("date after pay day", func(t *testing.T) {
+		var (
+			inputLastPayDate = time.Date(
+				2023,
+				01,
+				12,
+				0,
+				0,
+				0,
+				0,
+				time.Now().Location(),
+			)
+			inputCurrentTime = time.Date(
+				2023,
+				02,
+				13,
+				5,
+				45,
+				2,
+				0,
+				time.Now().Location(),
+			)
+		)
+		actual := subscription.IsPayDay(inputLastPayDate, inputCurrentTime)
+		assert.False(t, actual)
 	})
 }
 

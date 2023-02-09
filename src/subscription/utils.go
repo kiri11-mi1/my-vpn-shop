@@ -28,18 +28,21 @@ func GetName(sub string, id int64) string {
 
 func IsPayDay(lastPayTime, currentTime time.Time) bool {
 	nextPayTime := lastPayTime.AddDate(0, 1, 0)
-	if nextPayTime.Month() == currentTime.Month() && nextPayTime.Day() == currentTime.Day() {
-		return true
-	}
-	return false
+
+	monthCompare := nextPayTime.Month() == currentTime.Month()
+	dayCompare := nextPayTime.Day() == currentTime.Day()
+	yearCompare := nextPayTime.Year() == currentTime.Year()
+	return monthCompare && dayCompare && yearCompare
 }
 
 func IsTimeOutPay(lastPayTime, currentTime time.Time) bool {
 	nextPayTime := lastPayTime.AddDate(0, 1, 0)
-	if currentTime.After(nextPayTime) {
-		return true
-	}
-	return false
+
+	monthCompare := currentTime.Month() >= nextPayTime.Month()
+	yearCompare := currentTime.Year() >= nextPayTime.Year()
+	dayCompare := currentTime.Day() > nextPayTime.Day()
+
+	return monthCompare && dayCompare && yearCompare
 }
 
 func CheckError(err error) {
