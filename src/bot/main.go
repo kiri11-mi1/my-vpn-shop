@@ -60,4 +60,5 @@ func main() {
 
 	log.Println(b.Me.Username, "start working...")
 	b.Start()
+	go subscriptionService.CheckPayDateTask(b)
 }
