@@ -65,17 +65,10 @@ func (s *SQL) GetSubByID(id int64) (db.Subscriber, error) {
 
 func (s *SQL) UpdateSubscriberPayedAt(id int64) error {
 	payedAt := time.Now()
-	rows, err := s.db.Exec(
+	_, err := s.db.Exec(
 		"update subscriber set payed_at = $1 where id=$2",
 		payedAt.Format("2006-01-02"), id,
 	)
-	insertId, err := rows.LastInsertId()
-	if err != nil {
-		return err
-	}
-	if insertId == 0 {
-		return ErrSubNotFound
-	}
 	if err != nil {
 		return err
 	}
