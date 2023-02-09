@@ -28,7 +28,7 @@ func GetName(sub string, id int64) string {
 
 func IsPayDay(lastPayTime, currentTime time.Time) bool {
 	nextPayTime := lastPayTime.AddDate(0, 1, 0)
-	if nextPayTime.Month() == time.Now().Month() && nextPayTime.Day() == time.Now().Day() {
+	if nextPayTime.Month() == currentTime.Month() && nextPayTime.Day() == currentTime.Day() {
 		return true
 	}
 	return false
@@ -36,7 +36,7 @@ func IsPayDay(lastPayTime, currentTime time.Time) bool {
 
 func IsTimeOutPay(lastPayTime, currentTime time.Time) bool {
 	nextPayTime := lastPayTime.AddDate(0, 1, 0)
-	if nextPayTime.After(time.Now()) {
+	if currentTime.After(nextPayTime) {
 		return true
 	}
 	return false
