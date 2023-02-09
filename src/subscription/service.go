@@ -39,28 +39,6 @@ func NewSubscriptionService(storage Storage, api API) *Service {
 	return &Service{storage: storage, api: api}
 }
 
-func (s *Service) GetInvoice() (tg.Invoice, error) {
-	subs, err := s.storage.GetSubscribers()
-	if err != nil {
-		return tg.Invoice{}, err
-	}
-	price, err := GetActualPrice(len(subs)+1, config.Get().TotalVpnPrice)
-	if err != nil {
-		return tg.Invoice{}, err
-	}
-	file := tg.File{FileURL: InvoiceImage}
-	invoice := tg.Invoice{
-		Title:       InvoiceTitle,
-		Description: InvoiceDescription,
-		Payload:     InvoicePayload,
-		Currency:    InvoiceCurrency,
-		Token:       config.Get().ProviderToken,
-		Prices:      []tg.Price{price},
-		Photo:       &tg.Photo{File: file},
-	}
-	return invoice, nil
-}
-
 func (s *Service) IsConnected(chatId int64) bool {
 	if _, err := s.storage.GetSubByID(chatId); err != nil {
 		return false
@@ -85,6 +63,7 @@ func (s *Service) Connect(chatID int64, username string) (db.AccessKey, error) {
 		return db.AccessKey{}, err
 	}
 	log.Println("Add key in db:", dbKey.Name, dbKey.ID, dbKey.Subscriber.Name)
+	log.Println("Sub", newSub.ID, newSub.Name, "connected successfully")
 
 	return dbKey, nil
 }
@@ -100,6 +79,7 @@ func (s *Service) Disconnect(chatID int64) error {
 	if err := s.storage.DeleteSubscriber(chatID); err != nil {
 		return err
 	}
+	log.Println("Disconnect user", chatID)
 	return nil
 }
 
@@ -108,6 +88,7 @@ func (s *Service) FindKey(chatID int64) (db.AccessKey, error) {
 	if err != nil {
 		return db.AccessKey{}, err
 	}
+	log.Println("Find access key", key.AccessUrl, "for user", chatID)
 	return key, nil
 }
 
@@ -123,37 +104,39 @@ func (s *Service) Renew(chatID int64) error {
 	if err := s.storage.UpdateSubscriberPayedAt(chatID); err != nil {
 		return err
 	}
+	log.Println("update subscription for sub", chatID)
 	return nil
 }
 
-func (s *Service) CheckPayDateTask(bot *tg.Bot) {
+func (s *Service) CheckPayDateTask(bot *tg.Bot, delay time.Duration) {
+	log.Println("Start check payment date task....")
 	for true {
 		subs, err := s.storage.GetSubscribers()
 		CheckError(err)
-		if len(subs) == 0 {
-			continue
-		}
 		for _, sub := range subs {
 			recipient := &tg.Chat{ID: sub.ID}
 			now := time.Now()
 			if IsPayDay(sub.PayedAt, now) {
-				message := "Пора платить за VPN"
+				message := "Пора платить за VPN. Нужно заплатить в течение дня, иначе завтра я отключу вас от совместного использования"
 				_, err := bot.Send(recipient, message)
 				CheckError(err)
 
-				invoice, err := s.GetInvoice()
+				invoice, err := GetInvoice(len(subs), config.Get().ProviderToken, config.Get().TotalVpnPrice)
 				CheckError(err)
 
 				_, err = invoice.Send(bot, recipient, nil)
 				CheckError(err)
+
+				log.Println("pay day for sub", sub.ID, sub.Name, "with last pay date", sub.PayedAt)
 			}
 			if IsTimeOutPay(sub.PayedAt, now) {
 				message := "Вы просрочили оплату. Поэтому я отключаю вас от использования VPN :c"
 				_, err := bot.Send(recipient, message)
 				CheckError(err)
 				CheckError(s.Disconnect(sub.ID))
+				log.Println("timeout pay day for sub", sub.ID, sub.Name, "with last pay date", sub.PayedAt)
 			}
 		}
-		time.Sleep(24 * time.Hour)
+		time.Sleep(delay)
 	}
 }
