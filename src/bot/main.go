@@ -59,6 +59,6 @@ func main() {
 	b.Handle("/connections", handlerManager.HandleConnections)
 
 	log.Println(b.Me.Username, "start working...")
+	go subscriptionService.CheckPayDateTask(b, 60*time.Second)
 	b.Start()
-	go subscriptionService.CheckPayDateTask(b)
 }
