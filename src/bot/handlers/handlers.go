@@ -12,6 +12,7 @@ type SubscriptionService interface {
 	Disconnect(chatId int64) error
 	FindKey(chatID int64) (db.AccessKey, error)
 	GetCountSubs() (int, error)
+	Renew(chatID int64) error
 }
 
 type Handlers struct {
