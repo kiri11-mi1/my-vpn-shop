@@ -10,8 +10,26 @@ import (
 func TestUtils_IsTimeOutPay(t *testing.T) {
 	t.Run("test time out", func(t *testing.T) {
 		var (
-			inputLastPayDate = time.Date(2023, 01, 12, 0, 0, 0, 0, nil)
-			inputCurrentTime = time.Date(2023, 02, 15, 0, 0, 0, 0, nil)
+			inputLastPayDate = time.Date(
+				2023,
+				01,
+				12,
+				0,
+				0,
+				0,
+				0,
+				time.Now().Location(),
+			)
+			inputCurrentTime = time.Date(
+				2023,
+				02,
+				15,
+				0,
+				0,
+				0,
+				0,
+				time.Now().Location(),
+			)
 		)
 		actual := subscription.IsTimeOutPay(inputLastPayDate, inputCurrentTime)
 		assert.True(t, actual)
