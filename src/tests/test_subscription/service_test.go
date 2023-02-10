@@ -19,10 +19,7 @@ func TestService_Connect(t *testing.T) {
 	t.Run("connect sub", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
@@ -61,10 +58,7 @@ func TestService_Disconnect(t *testing.T) {
 	t.Run("disconnect sub", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
@@ -86,10 +80,7 @@ func TestService_Disconnect(t *testing.T) {
 	t.Run("disconnect not existing sub", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
@@ -111,10 +102,7 @@ func TestService_FindKey(t *testing.T) {
 	t.Run("find key", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
