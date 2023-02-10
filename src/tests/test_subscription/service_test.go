@@ -146,6 +146,27 @@ func TestService_FindKey(t *testing.T) {
 		actualKey, err := service.FindKey(subId)
 		require.Error(t, err)
 		assert.Empty(t, actualKey)
+	})
+}
 
+func TestService_IsConnected(t *testing.T) {
+	t.Run("is connected", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		require.NoError(t, err)
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		api := outline.NewOutlineClient(config.Get().ApiUrl)
+		service := subscription.NewSubscriptionService(sqliteStorage, api)
+
+		var (
+			subId   int64 = 123
+			subName       = "test user"
+		)
+		_, err = service.Connect(subId, subName)
+		require.NoError(t, err)
+		assert.True(t, service.IsConnected(subId))
+		require.NoError(t, service.Disconnect(subId))
 	})
 }
