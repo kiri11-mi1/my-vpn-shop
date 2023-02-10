@@ -83,4 +83,26 @@ func TestService_Disconnect(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, expectedCountSubs, len(actualSubs))
 	})
+	t.Run("disconnect not existing sub", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		api := outline.NewOutlineClient(config.Get().ApiUrl)
+		service := subscription.NewSubscriptionService(sqliteStorage, api)
+
+		var (
+			subId             int64 = 123
+			expectedCountSubs       = 0
+		)
+		require.Error(t, service.Disconnect(subId))
+		actualSubs, err := sqliteStorage.GetSubscribers()
+		require.NoError(t, err)
+		assert.Equal(t, expectedCountSubs, len(actualSubs))
+	})
 }
