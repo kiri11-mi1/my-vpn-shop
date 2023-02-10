@@ -219,6 +219,15 @@ func TestUtils_GetActualPrice(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, expected, actual)
 	})
+	t.Run("error zero keys", func(t *testing.T) {
+		var (
+			keysCount     = 0
+			totalVPNPrice = 350.0
+		)
+		_, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
+		require.ErrorIs(t, err, subscription.ErrZeroKeysInServer)
+
+	})
 }
 
 func TestService_GetInvoice(t *testing.T) {
