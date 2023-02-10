@@ -200,31 +200,31 @@ func TestUtils_IsPayDay(t *testing.T) {
 func TestUtils_GetActualPrice(t *testing.T) {
 	t.Run("get valid price", func(t *testing.T) {
 		var (
-			keysCount     = 3
+			subCount      = 3
 			totalVPNPrice = 350.0
 			expected      = tg.Price{Label: subscription.Label, Amount: 116.66 * 100}
 		)
-		actual, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
+		actual, err := subscription.GetActualPrice(subCount, totalVPNPrice)
 		require.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
 	})
 	t.Run("get minimal price", func(t *testing.T) {
 		var (
-			keysCount     = 16
+			subCount      = 16
 			totalVPNPrice = 350.0
 			expected      = tg.Price{Label: subscription.Label, Amount: subscription.MinAmount * 100}
 		)
-		actual, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
+		actual, err := subscription.GetActualPrice(subCount, totalVPNPrice)
 		require.NoError(t, err)
 		assert.Equal(t, expected, actual)
 	})
 	t.Run("error zero keys", func(t *testing.T) {
 		var (
-			keysCount     = 0
+			subCount      = 0
 			totalVPNPrice = 350.0
 		)
-		_, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
+		_, err := subscription.GetActualPrice(subCount, totalVPNPrice)
 		require.ErrorIs(t, err, subscription.ErrZeroKeysInServer)
 
 	})
