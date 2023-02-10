@@ -5,7 +5,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"log"
 	"my-vpn-shop/db"
 	"my-vpn-shop/storage"
 	"testing"
@@ -16,10 +15,7 @@ func TestSubscriber_InsertSubscriber(t *testing.T) {
 	t.Run("insert subscriber in db", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
@@ -38,10 +34,7 @@ func TestSubscriber_InsertSubscriber(t *testing.T) {
 	t.Run("insert subscriber in db with empty name", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
@@ -60,10 +53,7 @@ func TestSubscriber_InsertSubscriber(t *testing.T) {
 	t.Run("insert existing subscriber", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
@@ -84,10 +74,7 @@ func TestSubscriber_DeleteSubscriber(t *testing.T) {
 	t.Run("delete subscriber from db", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
@@ -106,10 +93,7 @@ func TestSubscriber_DeleteSubscriber(t *testing.T) {
 	t.Run("delete not existing subscriber from db", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
@@ -132,10 +116,7 @@ func TestSubscriber_GetSubscribers(t *testing.T) {
 	t.Run("get all subs", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
@@ -154,10 +135,7 @@ func TestSubscriber_GetSubByID(t *testing.T) {
 	t.Run("get sub from db", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
@@ -182,10 +160,7 @@ func TestSubscriber_GetSubByID(t *testing.T) {
 	t.Run("get not existing sub", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
@@ -200,10 +175,7 @@ func TestSubscriber_GetSubByID(t *testing.T) {
 	t.Run("check valid date", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
@@ -227,10 +199,7 @@ func TestSubscriber_UpdateSubscriberPayedAt(t *testing.T) {
 	t.Run("update sub pay date", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
@@ -254,10 +223,7 @@ func TestSubscriber_UpdateSubscriberPayedAt(t *testing.T) {
 	t.Run("update not existing sub pay date", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)

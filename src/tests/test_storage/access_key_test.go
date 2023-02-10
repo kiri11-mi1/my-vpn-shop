@@ -5,7 +5,6 @@ import (
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/require"
-	"log"
 	"my-vpn-shop/db"
 	"my-vpn-shop/storage"
 	"testing"
@@ -15,10 +14,7 @@ func TestAccessKey_InsertAccessKey(t *testing.T) {
 	t.Run("insert access key in db", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
@@ -51,10 +47,7 @@ func TestAccessKey_GetKeyBySubId(t *testing.T) {
 	t.Run("get key by sub id", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
@@ -85,10 +78,7 @@ func TestAccessKey_GetKeyBySubId(t *testing.T) {
 	t.Run("get key by not existing sub id", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		require.NoError(t, err)
 		sqliteDB := sqliteClient.Client()
 		require.NoError(t, sqliteClient.CreateTables())
 		sqliteStorage := storage.NewSQlDB(sqliteDB)
