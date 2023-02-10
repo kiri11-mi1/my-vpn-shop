@@ -138,4 +138,26 @@ func TestService_FindKey(t *testing.T) {
 
 		require.NoError(t, service.Disconnect(subId))
 	})
+	t.Run("find not existing key", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		api := outline.NewOutlineClient(config.Get().ApiUrl)
+		service := subscription.NewSubscriptionService(sqliteStorage, api)
+
+		var (
+			subId int64 = 123
+		)
+
+		actualKey, err := service.FindKey(subId)
+		require.Error(t, err)
+		assert.Empty(t, actualKey)
+
+	})
 }
