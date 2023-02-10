@@ -2,6 +2,8 @@ package test_subscription
 
 import (
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	tg "gopkg.in/telebot.v3"
 	"my-vpn-shop/subscription"
 	"testing"
 	"time"
@@ -196,6 +198,21 @@ func TestUtils_IsPayDay(t *testing.T) {
 }
 
 func TestUtils_GetActualPrice(t *testing.T) {
+	t.Run("get valid price", func(t *testing.T) {
+		var (
+			keysCount     = 3
+			totalVPNPrice = 350.0
+			expected      = tg.Price{Label: subscription.Label, Amount: 116.66 * 100}
+		)
+		actual, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
+		require.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+	})
+
+}
+
+func TestService_GetInvoice(t *testing.T) {
 
 }
 
