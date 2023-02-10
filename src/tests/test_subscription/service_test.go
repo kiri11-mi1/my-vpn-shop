@@ -209,4 +209,22 @@ func TestService_GetCountSubs(t *testing.T) {
 
 		assert.Equal(t, expectedCountSubs, actualCountSubs)
 	})
+	t.Run("get zero count subs", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		require.NoError(t, err)
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		api := outline.NewOutlineClient(config.Get().ApiUrl)
+		service := subscription.NewSubscriptionService(sqliteStorage, api)
+
+		var (
+			expectedCountSubs = 0
+		)
+		actualCountSubs, err := service.GetCountSubs()
+		require.NoError(t, err)
+
+		assert.Equal(t, expectedCountSubs, actualCountSubs)
+	})
 }
