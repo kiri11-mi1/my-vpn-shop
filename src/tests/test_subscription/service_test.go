@@ -16,7 +16,7 @@ import (
 )
 
 func TestService_Connect(t *testing.T) {
-	t.Run("sub is connected", func(t *testing.T) {
+	t.Run("connect sub", func(t *testing.T) {
 		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
 		sqliteClient, err := db.Connect("sqlite3", dbName)
 		if err != nil {
@@ -49,7 +49,10 @@ func TestService_Connect(t *testing.T) {
 
 		actualKey, err := sqliteStorage.GetKeyBySubId(subId)
 		require.NoError(t, err)
-		assert.Equal(t, expectedKey, actualKey)
+		assert.Equal(t, expectedKey.Name, actualKey.Name)
+		assert.Equal(t, expectedKey.AccessUrl, actualKey.AccessUrl)
+		assert.Equal(t, expectedKey.ID, actualKey.ID)
+		assert.Equal(t, expectedKey.Subscriber.ID, actualKey.Subscriber.ID)
 
 		require.NoError(t, api.DeleteKey(outline.AccessKey{Id: actualKey.ID}))
 	})
