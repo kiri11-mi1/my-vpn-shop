@@ -106,3 +106,36 @@ func TestService_Disconnect(t *testing.T) {
 		assert.Equal(t, expectedCountSubs, len(actualSubs))
 	})
 }
+
+func TestService_FindKey(t *testing.T) {
+	t.Run("find key", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		api := outline.NewOutlineClient(config.Get().ApiUrl)
+		service := subscription.NewSubscriptionService(sqliteStorage, api)
+
+		var (
+			subId   int64 = 123
+			subName       = "test user"
+		)
+		expectedKey, err := service.Connect(subId, subName)
+		require.NoError(t, err)
+
+		actualKey, err := service.FindKey(subId)
+		require.NoError(t, err)
+
+		assert.Equal(t, expectedKey.Name, actualKey.Name)
+		assert.Equal(t, expectedKey.AccessUrl, actualKey.AccessUrl)
+		assert.Equal(t, expectedKey.ID, actualKey.ID)
+		assert.Equal(t, expectedKey.Subscriber.ID, actualKey.Subscriber.ID)
+
+		require.NoError(t, service.Disconnect(subId))
+	})
+}
