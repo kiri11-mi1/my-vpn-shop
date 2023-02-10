@@ -114,6 +114,32 @@ func TestUtils_IsTimeOutPay(t *testing.T) {
 		actual := subscription.IsTimeOutPay(inputLastPayDate, inputCurrentTime)
 		assert.False(t, actual)
 	})
+	t.Run("next year time out", func(t *testing.T) {
+		var (
+			inputLastPayDate = time.Date(
+				2022,
+				12,
+				12,
+				0,
+				0,
+				0,
+				0,
+				time.Now().Location(),
+			)
+			inputCurrentTime = time.Date(
+				2023,
+				01,
+				13,
+				5,
+				45,
+				2,
+				0,
+				time.Now().Location(),
+			)
+		)
+		actual := subscription.IsTimeOutPay(inputLastPayDate, inputCurrentTime)
+		assert.True(t, actual)
+	})
 }
 
 func TestUtils_IsPayDay(t *testing.T) {
