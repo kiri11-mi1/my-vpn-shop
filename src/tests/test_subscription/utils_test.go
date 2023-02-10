@@ -290,10 +290,56 @@ func TestUtils_GetActualPrice(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, expected, actual)
 	})
+	t.Run("negative total price", func(t *testing.T) {
+		var (
+			subCount      = 14
+			totalVPNPrice = -12.0
+		)
+		_, err := subscription.GetActualPrice(subCount, totalVPNPrice)
+		require.ErrorIs(t, err, subscription.ErrNegativeTotalPrice)
+	})
 }
 
 func TestService_GetInvoice(t *testing.T) {
-
+	t.Run("get invoice", func(t *testing.T) {
+		var (
+			subCount      = 14
+			totalVPNPrice = 350.45
+			providerToken = "token test"
+		)
+		price, err := subscription.GetActualPrice(subCount, totalVPNPrice)
+		require.NoError(t, err)
+		expected := tg.Invoice{
+			Title:       subscription.InvoiceTitle,
+			Description: subscription.InvoiceDescription,
+			Payload:     subscription.InvoicePayload,
+			Currency:    subscription.InvoiceCurrency,
+			Token:       providerToken,
+			Prices:      []tg.Price{price},
+			Photo:       &tg.Photo{File: tg.File{FileURL: subscription.InvoiceImage}},
+		}
+		actual, err := subscription.GetInvoice(subCount, providerToken, totalVPNPrice)
+		require.NoError(t, err)
+		assert.Equal(t, expected, actual)
+	})
+	t.Run("zero keys", func(t *testing.T) {
+		var (
+			subCount      = 0
+			totalVPNPrice = 350.45
+			providerToken = "token test"
+		)
+		_, err := subscription.GetInvoice(subCount, providerToken, totalVPNPrice)
+		require.ErrorIs(t, err, subscription.ErrZeroKeysInServer)
+	})
+	t.Run("negative total price", func(t *testing.T) {
+		var (
+			subCount      = 35
+			totalVPNPrice = -350.45
+			providerToken = "token test"
+		)
+		_, err := subscription.GetInvoice(subCount, providerToken, totalVPNPrice)
+		require.ErrorIs(t, err, subscription.ErrNegativeTotalPrice)
+	})
 }
 
 func TestUtils_GetName(t *testing.T) {
