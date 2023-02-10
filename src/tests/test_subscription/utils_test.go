@@ -209,7 +209,16 @@ func TestUtils_GetActualPrice(t *testing.T) {
 		assert.Equal(t, expected, actual)
 
 	})
-
+	t.Run("get minimal price", func(t *testing.T) {
+		var (
+			keysCount     = 16
+			totalVPNPrice = 350.0
+			expected      = tg.Price{Label: subscription.Label, Amount: subscription.MinAmount * 100}
+		)
+		actual, err := subscription.GetActualPrice(keysCount, totalVPNPrice)
+		require.NoError(t, err)
+		assert.Equal(t, expected, actual)
+	})
 }
 
 func TestService_GetInvoice(t *testing.T) {
