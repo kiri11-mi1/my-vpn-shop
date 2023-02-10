@@ -169,4 +169,19 @@ func TestService_IsConnected(t *testing.T) {
 		assert.True(t, service.IsConnected(subId))
 		require.NoError(t, service.Disconnect(subId))
 	})
+	t.Run("is not connected", func(t *testing.T) {
+		dbName := fmt.Sprintf("test_store_%s.db", uuid.New())
+		sqliteClient, err := db.Connect("sqlite3", dbName)
+		require.NoError(t, err)
+		sqliteDB := sqliteClient.Client()
+		require.NoError(t, sqliteClient.CreateTables())
+		sqliteStorage := storage.NewSQlDB(sqliteDB)
+		api := outline.NewOutlineClient(config.Get().ApiUrl)
+		service := subscription.NewSubscriptionService(sqliteStorage, api)
+
+		var (
+			subId int64 = 123
+		)
+		assert.False(t, service.IsConnected(subId))
+	})
 }
