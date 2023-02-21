@@ -6,11 +6,26 @@ on:
       - main
 
 jobs:
-  run_tests:
-    yml: './github/workflows/run_tests.yml'
+  tests:
+    runs-on: ubuntu-latest
+    env:
+      VPN_URL_API: ${{ secrets.VPN_URL_API }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19.5
+
+      - name: Run tests
+        run: |
+          cd ./src
+          go test ./tests/...
+
   deploy:
     runs-on: ubuntu-latest
-    needs: [run_tests]
+    needs: [tests]
     steps:
       - uses: actions/checkout@v3
 
