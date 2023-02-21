@@ -10,11 +10,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: executing remote ssh commands using password
+
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v1.3
+        with:
+          envkey_POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          envkey_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          envkey_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          envkey_POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          envkey_POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+
+          envkey_VPN_URL_API: ${{ secrets.VPN_URL_API }}
+          envkey_TOTAL_VPN_PRICE: ${{ secrets.TOTAL_VPN_PRICE }}
+          envkey_TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          envkey_ADMIN_CHAT_ID: ${{ secrets.ADMIN_CHAT_ID }}
+          envkey_PROVIDER_TOKEN: ${{ secrets.PROVIDER_TOKEN }}
+
+          some_other_variable: foobar
+          directory: ./
+          file_name: .env
+          fail_on_empty: false
+          script: |
+            pwd
+            ls -a
+
+      - name: connect to server with ssh key
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           username: ${{ secrets.SSH_USER }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          script: whoami
+          script: |
+            whoami
