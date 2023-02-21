@@ -1,4 +1,4 @@
-name: Deploy
+name: Test and Deploy in server
 
 on:
   push:
@@ -13,12 +13,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Go
+      - name: setup golang
         uses: actions/setup-go@v3
         with:
           go-version: 1.19.5
 
-      - name: Run tests
+      - name: run tests
         run: |
           cd ./src
           go test ./tests/...
@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Make envfile
+      - name: generate envfile
         uses: SpicyPizza/create-envfile@v1.3
         with:
           envkey_POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
@@ -49,7 +49,7 @@ jobs:
           file_name: .env
           fail_on_empty: true
 
-      - name: copy files into remote server
+      - name: get last updates
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -59,7 +59,7 @@ jobs:
           source: "./"
           target: "~/my-vpn-shop"
 
-      - name: connect to server with ssh key
+      - name: build and start project
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
