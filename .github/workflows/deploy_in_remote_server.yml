@@ -36,6 +36,11 @@ jobs:
           file_name: .env
           fail_on_empty: true
 
+      - name: one more check dir path
+        run: |
+          pwd
+          ls -a
+
       - name: connect to server with ssh key
         uses: appleboy/ssh-action@v0.1.7
         with:
