@@ -6,12 +6,11 @@ on:
       - 'feature/**'
       - 'fix/**'
 
-env:
-  VPN_URL_API: ${{ secrets.VPN_URL_API }}
-
 jobs:
   tests:
     runs-on: ubuntu-latest
+    env:
+      VPN_URL_API: ${{ secrets.VPN_URL_API }}
     steps:
       - uses: actions/checkout@v3
 
