@@ -40,6 +40,7 @@ jobs:
         run: |
           pwd
           ls -a
+          cat .env
 
       - name: connect to server with ssh key
         uses: appleboy/ssh-action@v0.1.7
