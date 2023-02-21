@@ -6,8 +6,11 @@ on:
       - main
 
 jobs:
+  run_tests:
+    yml: './github/workflows/run_tests.yml'
   deploy:
     runs-on: ubuntu-latest
+    needs: run_tests
     steps:
       - uses: actions/checkout@v3
 
