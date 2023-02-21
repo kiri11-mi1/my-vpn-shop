@@ -10,7 +10,7 @@ jobs:
     yml: './github/workflows/run_tests.yml'
   deploy:
     runs-on: ubuntu-latest
-    needs: run_tests
+    needs: [run_tests]
     steps:
       - uses: actions/checkout@v3
 
