@@ -2,7 +2,7 @@ name: Tests
 
 on: [push]
 env:
-  VPN_URL_API: ${{vars.VPN_URL_API}}
+  VPN_URL_API: ${{ secrets.VPN_URL_API }}
 
 jobs:
   tests:
